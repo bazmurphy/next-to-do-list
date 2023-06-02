@@ -1,6 +1,12 @@
 import { prisma } from "@/db";
 import Link from "next/link";
 
+// it is better to extract away this logic into it's own function for reusability elsewhere
+function getTodos() {
+  // this is just some type of asynchronous code that gives you back data you can use
+  return prisma.todo.findMany();
+}
+
 export default async function Home() {
   // normally you would use a fetch or a useQuery to get your "todos" data
   // with Server Components inside of NextJS13 we don't need to do any of that
@@ -8,7 +14,7 @@ export default async function Home() {
   // and it will run all of this code on the Server and send that down to the Client
 
   // we can make a call to prisma (remember to make the function above async)
-  const todos = await prisma.todo.findMany();
+  // const todos = await prisma.todo.findMany();
 
   // this is the great thing about Server Components
   // as long as your code doesn't do anything on the Client such as useState, useEffect or onChange event listeners
@@ -26,6 +32,9 @@ export default async function Home() {
   // await prisma.todo.create({
   //   data: { title: "test to do 1", complete: false },
   // });
+
+  // now we have extracted that logic into another function we can use it here:
+  const todos = await getTodos();
 
   return (
     <>
