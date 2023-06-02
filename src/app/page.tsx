@@ -1,7 +1,15 @@
 import { prisma } from "@/db";
 import Link from "next/link";
 import { ToDoItem } from "@/components/ToDoItem";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
+
+type ToDoObject = {
+  id: string;
+  title: string;
+  complete: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 // it is better to extract away this logic into it's own function for reusability elsewhere
 function getTodos() {
@@ -63,7 +71,7 @@ export default async function Home() {
         </Link>
       </header>
       <ul className="pl-4">
-        {todos.map((todo) => {
+        {todos.map((todo: ToDoObject) => {
           return <ToDoItem key={todo.id} {...todo} toggleToDo={toggleToDo} />;
         })}
       </ul>
