@@ -151,3 +151,44 @@ the Server generated all the HTML and sent it down to the Client
 the Client didn't have to do anything at all
 the Client just recieved raw HTML and that's all it has to deal with
 We don't have to worry about Loading states, Errror states for our fetch/Query etc.
+
+---
+
+## ToDoItem component
+
+create a `/src/components/` folder
+
+create a `ToDoItem.tsx`
+
+```
+// type the ToDoItem props
+type ToDoItemProps = {
+  id: string;
+  title: string;
+  complete: boolean;
+};
+
+// create a ToDoItem component
+export function ToDoItem({ id, title, complete }: ToDoItemProps) {
+  return (
+    <li className="flex gap-1 items-center">
+      {/* "peer" class allows us to add different styles to the label based on if the input is checked or not */}
+      <input id={id} type="checkbox" className="cursor-pointer peer" />
+      <label
+        htmlFor={id}
+        className="cursor-pointer peer-checked:line-through peer-checked:text-slate-500"
+      >
+        {title}
+      </label>
+    </li>
+  );
+}
+```
+
+import the `ToDoItem` component in `/app/page.tsx` Home and use it in the todos.map return
+
+```
+{todos.map((todo) => {
+  return <ToDoItem key={todo.id} {...todo} />;
+})}
+```
