@@ -3,6 +3,10 @@
 create a next app
 `npx create-next-app@latest .`
 
+---
+
+## Prisma
+
 install prisma as a dev dependency
 `npx install prisma --save-dev`
 
@@ -69,6 +73,10 @@ no matter how many times we try to access this "prisma" variable
 it will only ever create one single client
 which will prevent the issue with Hot Reloading where many clients are spun up
 
+---
+
+## Initial setup
+
 remove everything except tailwind imports from `/src/app/globals.css`
 
 adjust metadata in `/src/app/layout.tsx`
@@ -76,3 +84,21 @@ adjust metadata in `/src/app/layout.tsx`
 remove everything inside Home in `/src/app/page.tsx`
 
 add some initial classes to `<body>` in `/src/app/layout.tsx`
+
+---
+
+## Adding `/new/` route
+
+add `/new/` folder in `/src/app/`
+
+create `/src/app/page.tsx`
+
+```
+export default function Page() {
+  return <h1>New</h1>
+}
+```
+
+and test the route http://localhost:3000/new
+
+---
