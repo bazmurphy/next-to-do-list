@@ -1,7 +1,9 @@
 import { prisma } from "@/db";
 import Link from "next/link";
 import { ToDoItem } from "@/components/ToDoItem";
+import { revalidatePath } from "next/cache";
 // import { redirect } from "next/navigation";
+import { VscAdd } from "react-icons/vsc";
 
 type ToDoObject = {
   id: string;
@@ -14,7 +16,7 @@ type ToDoObject = {
 // it is better to extract away this logic into it's own function for reusability elsewhere
 function getTodos() {
   // this is just some type of asynchronous code that gives you back data you can use
-  return prisma.todo.findMany();
+  return prisma.todo.findMany({ orderBy: { createdAt: "asc" } });
 }
 
 async function toggleToDo(id: string, complete: boolean) {
@@ -28,6 +30,20 @@ async function toggleToDo(id: string, complete: boolean) {
 
   // (!) you cannot do redirects like this inside of your Server Action:
   // redirect("/");
+}
+
+async function deleteToDo(id: string) {
+  "use server";
+
+  console.log(`Server Action deleteToDo id: ${id}`);
+
+  await prisma.todo.delete({ where: { id } });
+
+  // revalidatePath can be used within server-side functions, such as API routes or server-side rendering (SSR) pages, to selectively revalidate specific paths.
+  // When you call revalidatePath(path), where path is a string representing the path you want to revalidate, NextJS will mark that path as stale in the cache and trigger a revalidation.
+  // The subsequent request for that path will result in fetching new data and updating the cache accordingly.
+  // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
+  revalidatePath("/");
 }
 
 export default async function Home() {
@@ -61,18 +77,25 @@ export default async function Home() {
 
   return (
     <>
-      <header className="flex justify-between items-center mb-4">
+      <header className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl">To Do List</h1>
         <Link
-          className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
+          className="flex items-center gap-2 rounded border border-slate-300 px-2 py-1 text-slate-300 outline-none focus-within:bg-slate-700 hover:bg-slate-700"
           href="/new"
         >
-          New
+          <VscAdd /> New
         </Link>
       </header>
-      <ul className="pl-4">
+      <ul className="flex flex-col gap-4 pl-4">
         {todos.map((todo: ToDoObject) => {
-          return <ToDoItem key={todo.id} {...todo} toggleToDo={toggleToDo} />;
+          return (
+            <ToDoItem
+              key={todo.id}
+              {...todo}
+              toggleToDo={toggleToDo}
+              deleteToDo={deleteToDo}
+            />
+          );
         })}
       </ul>
     </>

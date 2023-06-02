@@ -1,6 +1,7 @@
 import { prisma } from "@/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { VscCheck, VscClose } from "react-icons/vsc";
 
 export default function Page() {
   // the great thing about Server Actions inside NextJS13 is they are built on top of the normal browser primitives
@@ -36,28 +37,30 @@ export default function Page() {
 
   return (
     <>
-      <header className="flex justify-between items-center mb-4">
+      <header className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl">New To Do Item</h1>
       </header>
       {/* we add the Server Action function to the form action= */}
-      <form action={createToDo} className="flex gap-2 flex-col">
+      <form action={createToDo} className="flex flex-col gap-2">
         {/* the name="title" is really important because we are going to use that inside of our Server Action */}
         <input
           type="text"
           name="title"
-          className="border border-slate-300 bg-transparent rounded px-2 py-1 outline-none focus-within:border-slate-100"
+          className="rounded border border-slate-300 bg-transparent px-2 py-1 outline-none focus-within:border-slate-100"
         />
-        <div className="flex gap-1 justify-end">
+        <div className="flex justify-end gap-1">
           <Link
             href=".."
-            className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
+            className="flex items-center gap-2 rounded border border-slate-300 px-2 py-1 text-slate-300 outline-none focus-within:bg-slate-700 hover:bg-slate-700"
           >
+            <VscClose />
             Cancel
           </Link>
           <button
             type="submit"
-            className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
+            className="flex items-center gap-2 rounded border border-slate-300 px-2 py-1 text-slate-300 outline-none focus-within:bg-slate-700 hover:bg-slate-700"
           >
+            <VscCheck />
             Create
           </button>
         </div>
