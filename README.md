@@ -1,4 +1,4 @@
-NextJS 13 To Do List
+# NextJS 13 To Do List
 
 create a next app
 `npx create-next-app@latest .`
@@ -30,7 +30,7 @@ it creates a `migration` folder/files and some `dev.db` files
 
 add `dev.db` to `.gitignore`
 
-in `src` create a new file `db.ts`
+in `/src/` create a new file `db.ts`
 
 There is an issue with NextJS in dev mode where it creates multiple Prisma Client connections:
 https://www.prisma.io/docs/guides/other/troubleshooting-orm/help-articles/nextjs-prisma-client-dev-practices
@@ -68,3 +68,11 @@ this instantiates a "Singleton"
 no matter how many times we try to access this "prisma" variable
 it will only ever create one single client
 which will prevent the issue with Hot Reloading where many clients are spun up
+
+remove everything except tailwind imports from `/src/app/globals.css`
+
+adjust metadata in `/src/app/layout.tsx`
+
+remove everything inside Home in `/src/app/page.tsx`
+
+add some initial classes to `<body>` in `/src/app/layout.tsx`
