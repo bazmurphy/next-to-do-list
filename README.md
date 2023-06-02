@@ -287,3 +287,62 @@ prisma:query COMMIT
 All the code for this asynchronous functions is being run on the Server, and so our Client is much simpler
 At the moment there is no logic on the Client, everything is rendered and sent down from the Server
 It makes it a lot easier to write clean Client code, because you don't have to worry about Loading states etc.
+
+---
+
+# Toggle To Do
+
+We add `defaultChecked` and `onChange` to our `ToDoItem` component
+the `defaultChecked` is our `todo.complete` `boolean`
+and the `onChange` runs the `toggleToDo` function which takes in an `id` and if the `event.target` is `checked` (checkbox)
+
+```
+defaultChecked={complete}
+onChange={(event) => toggleToDo(id, event.target.checked)}
+```
+
+We need to update the props of the `ToDoItem` component with the `toggleToDo` function
+
+```
+export function ToDoItem({ id, title, complete, toggleToDo }: ToDoItemProps) {
+```
+
+And include it in our map on the Home Page
+
+```
+{todos.map((todo) => {
+  return <ToDoItem key={todo.id} {...todo} toggleToDo={toggleToDo} />;
+})}
+```
+
+Now we have an `onChange` hooked up, we need to convert the `ToDoItem` component to a **Client Component** (because the default is a **Server Component**)
+
+We need to add `"use client"` at the top of the file.
+
+This is a Client Side Rendered component so don't render any of this on the Server, all of this interaction stuff is going to happen on the Client.
+
+Now in `/src/app/page.tsx` we can create the `toggleToDo` function
+
+we create an `async` function, that takes in an `id` and a `complete`
+
+1. we tell it is is a Server Action with `"use server"`
+
+2. we make a console log to demonstrate the function running on the Server
+
+3. we use prisma to update the todo with that specific `id` and update the `complete` value
+
+4. (!) Note: you cannot do redirects inside of your Server Action
+
+```
+async function toggleToDo(id: string, complete: boolean) {
+  "use server";
+
+  console.log(`Server Action toggleToDo id: ${id} complete: ${complete}`);
+
+  // update the todo "complete" value, where the id is the same as the one passed to the function
+  await prisma.todo.update({ where: { id }, data: { complete } });
+
+  // (!) you cannot do redirects like this inside of your Server Action:
+  // redirect("/");
+}
+```

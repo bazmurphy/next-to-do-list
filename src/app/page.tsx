@@ -1,11 +1,25 @@
 import { prisma } from "@/db";
 import Link from "next/link";
 import { ToDoItem } from "@/components/ToDoItem";
+import { redirect } from "next/navigation";
 
 // it is better to extract away this logic into it's own function for reusability elsewhere
 function getTodos() {
   // this is just some type of asynchronous code that gives you back data you can use
   return prisma.todo.findMany();
+}
+
+async function toggleToDo(id: string, complete: boolean) {
+  "use server";
+
+  // and in our server console we can see the id and complete values
+  console.log(`Server Action toggleToDo id: ${id} complete: ${complete}`);
+
+  // update the todo "complete" value, where the id is the same as the one passed to the function
+  await prisma.todo.update({ where: { id }, data: { complete } });
+
+  // (!) you cannot do redirects like this inside of your Server Action:
+  // redirect("/");
 }
 
 export default async function Home() {
@@ -50,7 +64,7 @@ export default async function Home() {
       </header>
       <ul className="pl-4">
         {todos.map((todo) => {
-          return <ToDoItem key={todo.id} {...todo} />;
+          return <ToDoItem key={todo.id} {...todo} toggleToDo={toggleToDo} />;
         })}
       </ul>
     </>
