@@ -140,9 +140,9 @@ but the actual data like the todos is going to make it's way down to the client
 If we add a todo with temporary code
 
 ```
-  await prisma.todo.create({
-    data: { title: "test to do 1", complete: false },
-  });
+await prisma.todo.create({
+  data: { title: "test to do 1", complete: false },
+});
 ```
 
 When we inspect the console of the rendered page we can see the todo information is already in the HTML
