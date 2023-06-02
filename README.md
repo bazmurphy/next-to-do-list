@@ -102,3 +102,52 @@ export default function Page() {
 and test the route http://localhost:3000/new
 
 ---
+
+## Getting the To Do data
+
+Normally you would use a fetch or a useQuery to get your "todos" data
+with Server Components inside of NextJS13 we don't need to do any of that
+as long as we are using the `/app/` folder we have the ability to call Server Code inside of our Components
+and it will run all of this on the Server and send down the data to the Client
+
+so we can make a call to prisma (remembering to make the parent function `async`) on the model `todo` using the `findMany` method
+
+```
+const todos = await prisma.todo.findMany();
+```
+
+and further down we can map over them
+
+```
+{todos.map((todo) => {
+  return <li key={todo.id}>{todo.title}</li>;
+})}
+```
+
+And in the console it shows we made a query to our database:
+
+```
+prisma:query SELECT `main`.`Todo`.`id`, `main`.`Todo`.`title`, `main`.`Todo`.`complete`, `main`.`Todo`.`createdAt`, `main`.`Todo`.`updatedAt` FROM `main`.`Todo` WHERE 1=1 LIMIT ? OFFSET ?
+```
+
+this is the great thing about Server Components
+as long as your code doesn't do anything on the Client such as `useState`, `useEffect` or `onChange` event listeners
+it will run ALL of your code on the Server and then send that down to the client
+which means you can do things like call your database using prisma FROM your Component
+and none of that Server/Database code is going to get the client
+but the actual data like the todos is going to make it's way down to the client
+
+If we add a todo with temporary code
+
+```
+  await prisma.todo.create({
+    data: { title: "test to do 1", complete: false },
+  });
+```
+
+When we inspect the console of the rendered page we can see the todo information is already in the HTML
+
+the Server generated all the HTML and sent it down to the Client
+the Client didn't have to do anything at all
+the Client just recieved raw HTML and that's all it has to deal with
+We don't have to worry about Loading states, Errror states for our fetch/Query etc.
