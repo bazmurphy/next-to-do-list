@@ -1,9 +1,7 @@
+import { prisma } from "@/db";
 import Link from "next/link";
 import { ToDoItem } from "@/components/ToDoItem";
 // import { redirect } from "next/navigation";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
 
 type ToDoObject = {
   id: string;
