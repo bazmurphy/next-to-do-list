@@ -171,16 +171,10 @@ type ToDoItemProps = {
 // create a ToDoItem component
 export function ToDoItem({ id, title, complete }: ToDoItemProps) {
   return (
-    <li className="flex gap-1 items-center">
-      {/* "peer" class allows us to add different styles to the label based on if the input is checked or not */}
-      <input id={id} type="checkbox" className="cursor-pointer peer" />
-      <label
-        htmlFor={id}
-        className="cursor-pointer peer-checked:line-through peer-checked:text-slate-500"
-      >
-        {title}
-      </label>
-    </li>
+      <li>
+        <input id={id} type="checkbox" />
+        <label htmlFor={id}>{title}</label>
+      </li>
   );
 }
 ```
@@ -192,3 +186,67 @@ import the `ToDoItem` component in `/app/page.tsx` Home and use it in the todos.
   return <ToDoItem key={todo.id} {...todo} />;
 })}
 ```
+
+---
+
+## Add To Do Form
+
+we create a form in `/src/app/new/page.tsx`
+
+```
+<form>
+  {/* the name="title" is really important because we are going to use that inside of our Server Action */}
+  <input type="text" name="title" />
+  <div>
+    <Link href="..">Cancel</Link>
+    <button type="submit">Create</button>
+  </div>
+</form>
+```
+
+---
+
+## Server Actions
+
+(!) we must specifically enable `experimental` `serverActions` in the `next.config.js`
+
+```
+const nextConfig = {
+  experimental: {
+    serverActions: true,
+  },
+};
+```
+
+the great thing about Server Actions inside NextJS13 is they are built on top of the normal browser primitives
+this is really good because if the JavaScript on the page is disabled everything will still work (without the bells & whistles)
+and its built on things we are already used to for example with Forms
+
+we can write a function, it must be async (that is really important)
+and to run this function on the server you need to add "use server" as a string at the top of the function
+it is saying "this function is server code and it will never run on the client, it only ever runs on the server"
+
+```
+  async function createToDo(data: FormData) {
+    "use server";
+
+    console.log("Testing Server Actions createToDo");
+  }
+```
+
+And we then add that to the `action` of the `<form>`
+
+```
+<form action={createToDo}>
+```
+
+and when we submit the form, it will call the createToDo function on our Server
+and in the Server console we see
+and in the Client console nothing happens
+
+```
+Testing Server Actions createToDo
+```
+
+If we check the Client console nothing happens
+But if we check the Network tab we can see when we submit the form it makes a `fetch` request (`POST`) to `http://localhost:3000/new`
