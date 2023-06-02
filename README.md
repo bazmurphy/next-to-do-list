@@ -346,3 +346,35 @@ async function toggleToDo(id: string, complete: boolean) {
   // redirect("/");
 }
 ```
+
+---
+
+# Deploy on Vercel
+
+It seems NextJS uses `.env.local` for private/secret environment variables and `.env` is used for public environment variables
+
+But Prisma reads environment variables from the `.env` file
+
+[ What is the workaround(?) It seems there is a way using `dot-cli` ]
+
+Create a vercel postgresql database
+
+to the `schema.prisma` adjust the `datasource`:
+
+```
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+}
+```
+
+Add to the `.env` (really it should be `.env.local` but see above) the various information:
+
+```
+POSTGRES_PRISMA_URL=""
+POSTGRES_URL_NON_POOLING=""
+```
+
+And also add these^ environemnt variables to the Vercel project deployment
