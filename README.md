@@ -250,3 +250,40 @@ Testing Server Actions createToDo
 
 If we check the Client console nothing happens
 But if we check the Network tab we can see when we submit the form it makes a `fetch` request (`POST`) to `http://localhost:3000/new`
+
+Now we can write the createToDo function (Server Actions) to handle the form submit:
+
+1. we use the form data get method to get the value of the input with the name "title"
+2. we do input validation & error handling
+3. we create a new todo in the database with prisma
+4. and then redirect (using the NextJS function) back to the home page
+
+```
+  async function createToDo(data: FormData) {
+    console.log("Testing Server Actions createToDo");
+
+    const title = data.get("title")?.valueOf();
+
+    if (typeof title !== "string" || title.length === 0) {
+      throw new Error("Invalid title");
+    }
+
+    await prisma.todo.create({ data: { title: title, complete: false } });
+
+    redirect("/");
+  }
+```
+
+Now when we create a new to do, it runs our Server Action, and we can see the Prisma console output:
+
+```
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query INSERT INTO `main`.`Todo` (`id`, `title`, `complete`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?) RETURNING `id` AS `id`
+prisma:query SELECT `main`.`Todo`.`id`, `main`.`Todo`.`title`, `main`.`Todo`.`complete`, `main`.`Todo`.`createdAt`, `main`.`Todo`.`updatedAt` FROM `main`.`Todo` WHERE `main`.`Todo`.`id` = ? LIMIT ? OFFSET ?
+prisma:query COMMIT
+```
+
+All the code for this asynchronous functions is being run on the Server, and so our Client is much simpler
+At the moment there is no logic on the Client, everything is rendered and sent down from the Server
+It makes it a lot easier to write clean Client code, because you don't have to worry about Loading states etc.

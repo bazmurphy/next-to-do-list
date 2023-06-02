@@ -1,3 +1,5 @@
+import { prisma } from "@/db";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 
 export default function Page() {
@@ -16,6 +18,20 @@ export default function Page() {
     "use server"; // (!) we must set experimental: { serverActions: true } in our next.config.js
 
     console.log("Testing Server Actions createToDo");
+
+    // we use the form data get method to get the value of the input with the name "title"
+    const title = data.get("title")?.valueOf();
+
+    // input validation & error handling
+    if (typeof title !== "string" || title.length === 0) {
+      throw new Error("Invalid title");
+    }
+
+    // we create a new todo in the database with prisma
+    await prisma.todo.create({ data: { title: title, complete: false } });
+
+    // and then redirect (using the NextJS function) back to the home page
+    redirect("/");
   }
 
   return (
